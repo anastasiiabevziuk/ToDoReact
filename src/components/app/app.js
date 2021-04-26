@@ -12,13 +12,19 @@ export default class App extends Component {
         super(props);
         this.state = {
             data : [
-                {label: "Find a dream job", important: true, id: "gfhj"},
-                {label: "Clean the house", important: false, id: "jhjm"},
-                {label: "Read the book", important: false, id: "hgfg"}
+                {label: "Find a dream job", important: false, id: 1},
+                {label: "Clean the house", important: false, id: 2},
+                {label: "Read the book", important: false, id: 3}
             ]
         };
         this.deleteItem = this.deleteItem.bind(this);
+        this.addItem = this.addItem.bind(this);
+        this.onToggleImportant = this.onToggleImportant.bind(this);
+        
+
+        this.maxId = 4;
     }
+
     deleteItem(id){
         this.setState(({data})=> {
             const index = data.findIndex(elem => elem.id === id);
@@ -31,14 +37,48 @@ export default class App extends Component {
         });
     }
 
+    addItem(body){
+        const newItem = {
+            label: body,
+            important: false,
+            id: this.maxId++
+        }
+        this.setState(({data}) => {
+            const newArr =[...data, newItem];
+            return {
+                data: newArr 
+            }
+        })  
+    }
+
+    onToggleImportant(id){
+        this.setState(({data}) => {
+            const index = data.findIndex(elem => elem.id === id);
+
+            const old = data[index];
+            const newItem = {...old, important: !old.important};
+            const newArr = [...data.slice(0, index), newItem, ...data.slice(index+1)];
+            return{
+                data: newArr
+            }
+        })
+
+    }
+
    render(){
+       const allPosts = this.state.data.length;
+       const importants = this.state.data.filter(item => item.important).length;
         return (
             <div className="app">
-                <AppHeader/>
-                <PostAddForm/>
+                <AppHeader
+                importants={importants}
+                allPosts={allPosts}/>
+                <PostAddForm
+                onAdd={this.addItem}/>
                 <PostList 
                 posts={this.state.data}
-                onDelete={this.deleteItem}/>
+                onDelete={this.deleteItem}
+                onToggleImportant={this.onToggleImportant}/>
                 <div className="search-panel d-flex">
                     <SearchPanel/>
                     <PostStatusFilter/>

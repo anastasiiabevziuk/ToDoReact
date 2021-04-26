@@ -7,16 +7,16 @@ export default class PostListItem extends Component{
             important: false,
             done:false
         }
-        this.onImportant = this.onImportant.bind(this);
+        //this.onImportant = this.onImportant.bind(this);
         this.onDone = this.onDone.bind(this);
 
     }
 
-    onImportant(){
+    /*onImportant(){
         this.setState(({important})=> ({
             important: !important
         }))
-    }
+    }*/
     onDone(){
         this.setState(({done})=> ({
             done: !done
@@ -25,8 +25,8 @@ export default class PostListItem extends Component{
 
 
     render(){
-        const {label, onDelete} = this.props
-        const {important, done} = this.state;
+        const {label, onDelete, onToggleImportant, important} = this.props
+        const {done} = this.state;
         let classNames = "app-list-item d-flex justify-content-between";
         if(important){
             classNames+=" important"
@@ -53,7 +53,7 @@ export default class PostListItem extends Component{
                     </button >
                     <button type="button" 
                     className="btn-star btn-sm"
-                    onClick={this.onImportant}>
+                    onClick={onToggleImportant}>
                         <i className="fa fa-star"></i>
                     </button>
                 </div>
