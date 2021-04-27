@@ -15,11 +15,15 @@ export default class App extends Component {
                 {label: "Find a dream job", important: false, id: 1},
                 {label: "Clean the house", important: false, id: 2},
                 {label: "Read the book", important: false, id: 3}
-            ]
+            ],
+            term: '',
+            filter: 'all'
         };
         this.deleteItem = this.deleteItem.bind(this);
         this.addItem = this.addItem.bind(this);
         this.onToggleImportant = this.onToggleImportant.bind(this);
+        this.onUpdateSearch = this.onUpdateSearch.bind(this);
+        this.onFilterSelect = this.onFilterSelect.bind(this);
         
 
         this.maxId = 4;
@@ -62,12 +66,42 @@ export default class App extends Component {
                 data: newArr
             }
         })
+    }
 
+    searchPost(items, term){
+        if(term.length === 0){
+            return items;
+        }
+
+        return items.filter((item) => {
+            return item.label.indexOf(term) > -1;
+        });
+
+    }
+
+    filterPost(items, filter){
+        if(filter === "important"){
+            return items.filter(item=> item.important);
+        }else {
+            return items;
+        }
+
+    }
+
+    onUpdateSearch(term){
+        this.setState({term});
+
+    }
+
+    onFilterSelect(filter){
+        this.setState({filter});
     }
 
    render(){
        const allPosts = this.state.data.length;
        const importants = this.state.data.filter(item => item.important).length;
+
+       const visiblePosts = this.filterPost(this.searchPost(this.state.data, this.state.term), this.state.filter);
         return (
             <div className="app">
                 <AppHeader
@@ -76,12 +110,15 @@ export default class App extends Component {
                 <PostAddForm
                 onAdd={this.addItem}/>
                 <PostList 
-                posts={this.state.data}
+                posts={visiblePosts}
                 onDelete={this.deleteItem}
                 onToggleImportant={this.onToggleImportant}/>
                 <div className="search-panel d-flex">
-                    <SearchPanel/>
-                    <PostStatusFilter/>
+                    <SearchPanel
+                    onUpdateSearch={this.onUpdateSearch}/>
+                    <PostStatusFilter
+                    filter={this.state.filter}
+                    onFilterSelect={this.onFilterSelect}/>
                 </div>  
             </div> 
         )
